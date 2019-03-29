@@ -26,7 +26,17 @@ public class BeanConvert<T> implements Converter<T> {
 
         if (body == null) return null;
         JSONObject jsonResponse = JSON.parseObject(body.string());
-        return JSON.parseObject(jsonResponse.get("data").toString(), mType);
+        if (jsonResponse.getIntValue("code") == 0){
+            if (jsonResponse.containsKey("data")) {
+                return JSON.parseObject(jsonResponse.get("data").toString(), mType);
+            }
+            else{
+               return JSON.parseObject(body.string(), mType);
+            }
+        }else {
+            return JSON.parseObject(body.string(), mType);
+        }
+
     }
 //    public class JsonResponse{
 //        public int code;

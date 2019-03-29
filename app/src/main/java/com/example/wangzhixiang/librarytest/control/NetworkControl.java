@@ -16,15 +16,11 @@ public class NetworkControl {
         NetworkJava.userLogin(params).subscribe(new Observer<Response<User>>() {
             @Override
             public void onSubscribe(Disposable d) {
-
             }
-
             @Override
             public void onNext(Response<User> userResponse) {
-                EventBus.getDefault().post(userResponse.body());
+                EventBus.getDefault().post(new MessageEvent(userResponse.body()));
             }
-
-
             @Override
             public void onError(Throwable e) {
 

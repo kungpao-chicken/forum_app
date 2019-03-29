@@ -40,6 +40,7 @@ public class Utils {
         return deviceInfo;
     }
     public static HashMap<String, String> ObjectToMap(Object object){
+
         HashMap<String, String> stringObjectMap = JSON.parseObject(JSON.toJSONString(object), new TypeReference<HashMap<String, String>>(){});
         return stringObjectMap;
     }

@@ -34,6 +34,7 @@ import com.githang.statusbar.StatusBarCompat;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,9 +84,11 @@ public class MainActivity extends AppCompatActivity {
         DeviceInfo deviceInfo = Utils.getDeviceInfo(this);
 //        Log.i("deviceinfo", deviceInfo.toString());
         HashMap stringObjectMap = Utils.ObjectToMap(deviceInfo);
+//        Log.i("deviceinfo", stringObjectMap.toString());
         String sign = Utils.getAppVerify(stringObjectMap);
-        Log.i("sign", sign);
-////        NetworkControl.login(stringObjectMap);
+//        Log.i("sign", sign);
+        stringObjectMap.put("sign", sign);
+        NetworkControl.login(stringObjectMap);
 //        Log.i("deviceinfo", deviceInfo.toString());
     }
 
@@ -108,17 +111,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean hasAllPermissionsGranted(int[] grantResults) {
-        if (grantResults.length >0){
-            for (int i=0; i < grantResults.length; i++){
-                int grandResult = grantResults[i];
-                if (grandResult == PackageManager.PERMISSION_DENIED){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
     private void showPermissionDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -151,6 +143,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (EventBus.getDefault().isRegistered(this)){
+            EventBus.getDefault().unregister(this);
+        }
     }
 
     @Override
@@ -206,8 +206,9 @@ public class MainActivity extends AppCompatActivity {
         }
         transaction.commit();
     }
-    @Subscribe
-    public void loginResults(User user){
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    public void loginResults(Object user){
+        User myUser = (User) user;
         if (user != null){
             Toast.makeText(this, "get user", Toast.LENGTH_LONG).show();
         }
